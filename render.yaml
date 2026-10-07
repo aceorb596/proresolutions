@@ -1,0 +1,33 @@
+# Apply to the existing proresolutions service (srv-db2qcqs9v7es739ssijg).
+# Review Render's plan: update that service only; do not create a replacement.
+services:
+  - type: web
+    name: proresolutions
+    runtime: python
+    region: oregon
+    plan: free
+    repo: https://github.com/aceorb596/proresolutions
+    branch: main
+    numInstances: 1
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: gunicorn 'backend.app:create_app(start_worker=True)' --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 60
+    healthCheckPath: /ready
+    autoDeployTrigger: 'off'
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.11
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ae-world
+          property: connectionString
+      - key: CLICKUP_TOKEN
+        fromService:
+          name: ae-clickup-loop-v2
+          type: web
+          envVarKey: CLICKUP_TOKEN
+      - key: CLICKUP_LIST_ID
+        value: '901421893621'
+      - key: ADMIN_TOKEN
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: https://proresolutions.onrender.com,https://pro-solutions-website.onrender.com
