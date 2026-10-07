@@ -10,11 +10,11 @@ task in ClickUp's **work** list (`901421893621`).
 
 ## Current status — October 7, 2026
 
-This source was recovered from the earlier saved implementation and updated for
-the existing web service. It has **not** been pushed or deployed by this task.
-GitHub rejects branch creation with HTTP 403, "Resource not accessible by
-integration". Its connected installation inventory is empty. Render's connector
-cannot link existing secrets or change service build settings.
+This source was recovered from the earlier saved implementation and uploaded
+through the GitHub browser interface to `aceorb596/proresolutions`, branch
+`main`. Production deployment and the live form acceptance check are pending.
+Render's Dashboard is required to change the existing service's repository
+and build settings and connect its existing integrations.
 
 Fresh live checks returned 200 from `/health` and 503 from `/ready`.
 The deployed build expands a release stored in environment variables, so pushing
@@ -24,7 +24,7 @@ GitHub source alone does not replace that implementation.
 
 | Resource | Identity |
 | --- | --- |
-| GitHub source | `aceorb596/pro-solutions-website`, branch `main` |
+| GitHub source | `aceorb596/proresolutions`, branch `main` |
 | Upstream source base | `e8c2b87f7a98eade35451e64bba4c989aa186768` |
 | Render workspace | Chadlie's workspace, `tea-db18fo0u01pc73daljbg` |
 | Render web service | `proresolutions`, `srv-db2qcqs9v7es739ssijg` |
@@ -34,8 +34,8 @@ GitHub source alone does not replace that implementation.
 
 ## Finish the existing deployment
 
-1. Restore GitHub connector write access to the repository. Review and merge this
-   source on `main`; it contains no credentials or customer data.
+1. Use the source on `aceorb596/proresolutions`, branch `main`; it contains
+   no credentials or customer data.
 2. Open the [existing Render service](https://dashboard.render.com/web/srv-db2qcqs9v7es739ssijg).
    Use its controlling Blueprint if it has one. Otherwise use the Dashboard
    workflow to generate/adopt a Blueprint for this existing service.
