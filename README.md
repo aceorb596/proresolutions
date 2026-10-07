@@ -10,15 +10,14 @@ task in ClickUp's **work** list (`901421893621`).
 
 ## Current status — October 7, 2026
 
-This source was recovered from the earlier saved implementation and uploaded
-through the GitHub browser interface to `aceorb596/proresolutions`, branch
-`main`. Production deployment and the live form acceptance check are pending.
-Render's Dashboard is required to change the existing service's repository
-and build settings and connect its existing integrations.
+The prepared website and backend were uploaded through the GitHub browser
+interface to `aceorb596/proresolutions`, branch `main`. The existing Render
+service now builds from that repository and is live at the unchanged URL.
+Runtime commit: `375be25435c485baa0362980379b2f4408232e04`.
 
-Fresh live checks returned 200 from `/health` and 503 from `/ready`.
-The deployed build expands a release stored in environment variables, so pushing
-GitHub source alone does not replace that implementation.
+The existing ae-world database and ClickUp integration are configured using
+server-side environment variables. No duplicate resources were created.
+The timing dropdown markup was corrected without changing labels or prices.
 
 ## Existing resources
 
@@ -32,33 +31,19 @@ GitHub source alone does not replace that implementation.
 | Existing ClickUp service | `ae-clickup-loop-v2`, `srv-db1bdjjncjis73c1efl0` |
 | ClickUp destination | [work](https://app.clickup.com/90141732851/v/l/li/901421893621) |
 
-## Finish the existing deployment
+## Deployment configuration
 
-1. Use the source on `aceorb596/proresolutions`, branch `main`; it contains
-   no credentials or customer data.
-2. Open the [existing Render service](https://dashboard.render.com/web/srv-db2qcqs9v7es739ssijg).
-   Use its controlling Blueprint if it has one. Otherwise use the Dashboard
-   workflow to generate/adopt a Blueprint for this existing service.
-   `render.yaml` supplies the desired settings.
-3. Review Render's change plan: update `srv-db2qcqs9v7es739ssijg`, create no
-   services, databases, or disks, and keep the current free plan. A new suffixed
-   `proresolutions-*` service is a different resource; do not apply that plan.
-   The configuration retains manual deployments.
-4. The Blueprint links `DATABASE_URL` to `ae-world`'s internal connection string
-   and `CLICKUP_TOKEN` to the existing variable on `ae-clickup-loop-v2`.
-   It preserves an existing `ADMIN_TOKEN`, generating one only if absent.
-   Database external access can remain closed.
-5. Confirm the saved build command is
-   `pip install -r backend/requirements.txt`. The old release extraction must
-   no longer run. Omitted `PRORESOLUTIONS_RELEASE` and `PRORESOLUTIONS_SHA256`
-   variables may remain in Render; this code and normal build do not use them.
-6. Apply the reviewed update and run the acceptance checks below. A YAML change
-   takes effect only after Render adopts/syncs that Blueprint.
+The existing service was configured directly in Render Dashboard; no new
+Blueprint or service was created. `render.yaml` records the intended settings.
 
-If adopting a Blueprint is unavailable, configure those same two connections
-inside Render's Environment settings and copy the remaining settings from
-`render.yaml` into the existing service. Keep secrets in Render; do not paste
-them into GitHub, a customer form, or chat.
+- Repository: `https://github.com/aceorb596/proresolutions`, branch `main`.
+- Build: `pip install -r backend/requirements.txt`.
+- Start: `gunicorn 'backend.app:create_app(start_worker=True)' --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 60`.
+- Health check: `/ready`; manual deployments retained.
+- `DATABASE_URL` uses ae-world's internal connection; `CLICKUP_TOKEN` reuses the
+  existing integration token. Existing `ADMIN_TOKEN` retained.
+- Legacy release environment variables remain unused by this build.
+- Database external access remains closed; all secrets stay in Render.
 
 ## Website and API
 
@@ -114,18 +99,20 @@ For interactive development, configure a dedicated test database and ClickUp
 list, set `DATABASE_URL`, `CLICKUP_TOKEN`, `CLICKUP_LIST_ID`, `ALLOWED_ORIGINS`,
 and `ADMIN_TOKEN`, then run `python -m backend.app`.
 
-## Live acceptance check — pending
+## Live acceptance check — passed October 7, 2026
 
-1. Confirm `/` and frontend assets return 200; `/ready` must return
-   `{"ready":true}`.
-2. Send one clearly marked synthetic form inquiry: five buildings, bird
-   protection, `test@example.com`, and notes "Synthetic test — do not contact".
-   Expected cleaning subtotal: $6,250. Bird protection remains separately quoted.
-3. Check one saved request through the protected admin endpoint and one matching
-   `[PR <request UUID>]` task in ClickUp **work**.
-4. Replay the same POST with the same ID. Expect HTTP 200, the same receipt, and
-   no additional database row or ClickUp task.
-5. Keep the test task visibly labeled and close it after review.
+- Local test suite: 26 passed.
+- Live browser submitted a synthetic five-building quote with bird protection
+  and Planning ahead timing. Cleaning subtotal was $6,250; bird protection
+  remained separately quoted and eligible for the bundle discount.
+- Receipt: `e8a1527b-8cab-4f91-9bb5-1b9c3dd1ee35`.
+- Matching ClickUp task: `86bceux8c`, explicitly labeled synthetic and closed.
+- Identical POST replay returned HTTP 200 and the same saved receipt.
+  ClickUp contained exactly one task for this request.
+- `/health` and `/ready` returned HTTP 200. Unauthenticated admin access
+  returned 401; backend source, render.yaml and .env returned 404.
+- Persistence was verified through saved-receipt replay. Direct external SQL
+  inspection was not used because database external access is closed.
 
 ## Operations and current limits
 
